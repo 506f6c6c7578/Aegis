@@ -1,0 +1,194 @@
+---
+import { Menu, X } from "lucide-react";
+import Logo from "@/components/layout/Logo.astro";
+import ThemeSwitcher from "@/components/layout/ThemeSwitcher.astro";
+import { navigation, pages, reportPathPrefix } from "@/data/site";
+import navigationScript from "@/scripts/navigation.js?raw";
+
+const pathname = Astro.url.pathname.replace(/\.html$/, "");
+const section = pathname.startsWith(reportPathPrefix) ? pages.verify : pathname;
+---
+
+<header class="header print-hidden">
+    <div class="container-page header__inner">
+        <Logo/>
+        <nav id="site-nav" class="nav" popover aria-label="Navigation principale">
+            <ul class="nav__list">
+                {navigation.map(({ label, href, section: anchor }) => (
+                        <li>
+                            <a class="nav__link" href={href} data-astro-prefetch data-section={anchor}
+                               aria-current={href === section ? "page" : undefined}>{label}</a>
+                        </li>
+                ))}
+            </ul>
+        </nav>
+        <div class="header__actions">
+            <ThemeSwitcher/>
+            <button class="nav-toggle" type="button" popovertarget="site-nav" aria-controls="site-nav"
+                    aria-expanded="false" aria-label="Menu de navigation" data-nav-toggle>
+                <Menu className="nav-toggle__icon nav-toggle__icon--open" size={24} aria-hidden="true"/>
+                <X className="nav-toggle__icon nav-toggle__icon--close" size={24} aria-hidden="true"/>
+            </button>
+        </div>
+    </div>
+    <script is:inline set:html={navigationScript}/>
+</header>
+
+<style>
+    .header {
+        --glass-background: var(--background);
+        --glass-filter: none;
+
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background-color: var(--glass-background);
+        backdrop-filter: var(--glass-filter);
+        box-shadow: inset 0 -1px 0 var(--border);
+        view-transition-name: site-header;
+    }
+
+    @supports (backdrop-filter: blur(0)) and (color: color-mix(in srgb, red, red)) {
+        .header {
+            --glass-background: color-mix(in srgb, var(--background) 75%, transparent);
+            --glass-filter: blur(1.25rem) saturate(180%);
+        }
+    }
+
+    .header__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        height: var(--header-height);
+    }
+
+    .header__actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .nav-toggle {
+        display: grid;
+        place-items: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        padding: 0;
+        color: var(--foreground);
+        background: none;
+        border: 0;
+        border-radius: var(--radius);
+    }
+
+    .nav-toggle :global(.nav-toggle__icon) {
+        grid-area: 1 / 1;
+        transition: opacity 0.2s ease, rotate 0.3s var(--ease-out);
+    }
+
+    .nav-toggle[aria-expanded="true"] :global(.nav-toggle__icon--open) {
+        opacity: 0;
+        rotate: 90deg;
+    }
+
+    .nav-toggle[aria-expanded="false"] :global(.nav-toggle__icon--close) {
+        opacity: 0;
+        rotate: -90deg;
+    }
+
+    .nav {
+        position: fixed;
+        inset: var(--header-height) 0 auto;
+        width: 100%;
+        margin: 0;
+        padding: 0.5rem 1rem 1.5rem;
+        color: inherit;
+        background-color: var(--background);
+        border: 0;
+        border-bottom: 1px solid var(--border);
+        opacity: 0;
+        translate: 0 -0.5rem;
+        transition: opacity 0.2s ease, translate 0.2s ease, overlay 0.2s allow-discrete, display 0.2s allow-discrete;
+    }
+
+    .nav:popover-open {
+        opacity: 1;
+        translate: 0 0;
+    }
+
+    @starting-style {
+        .nav:popover-open {
+            opacity: 0;
+            translate: 0 -0.5rem;
+        }
+    }
+
+    .nav__list {
+        display: grid;
+        justify-items: center;
+    }
+
+    .nav__link {
+        position: relative;
+        display: block;
+        padding: 0.75rem;
+        font-weight: 600;
+        color: var(--foreground);
+        border-radius: var(--radius);
+        transition: background-color 0.2s ease;
+    }
+
+    .nav__link::after {
+        content: "";
+        position: absolute;
+        inset-inline: 0.75rem;
+        bottom: 0.375rem;
+        height: 2px;
+        background-color: var(--foreground);
+        border-radius: 1px;
+        scale: 0 1;
+        transform-origin: left;
+        transition: scale 0.3s var(--ease-out);
+    }
+
+    .nav__link[aria-current]::after {
+        scale: 1 1;
+    }
+
+    .nav__link:hover {
+        background-color: var(--accent);
+    }
+
+    @media (min-width: 64rem) {
+        .nav-toggle {
+            display: none;
+        }
+
+        .nav {
+            position: static;
+            inset: auto;
+            display: block;
+            width: auto;
+            overflow: visible;
+            margin-left: auto;
+            padding: 0;
+            background: none;
+            border: 0;
+            opacity: 1;
+            translate: none;
+        }
+
+        .nav__list {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav__link {
+            padding: 0.5rem 0.75rem;
+        }
+
+        .nav__link::after {
+            bottom: 0.25rem;
+        }
+    }
+</style>

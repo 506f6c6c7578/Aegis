@@ -1,0 +1,38 @@
+---
+import { pages, site } from "@/data/site";
+import { createLogoMark } from "@/lib/brand";
+---
+
+<a class="logo" href={pages.home} aria-label={`${site.name}, retour à l'accueil`}>
+    <svg class="logo__mark" width="32" height="32" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+        <rect width="64" height="64" rx="14" fill="currentColor"></rect>
+        <g class="logo__ink" set:html={createLogoMark("var(--background)")}/>
+    </svg>
+    <span>{site.name}</span>
+</a>
+
+<style>
+    .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        font-family: var(--font-heading);
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--foreground);
+    }
+
+    .logo__mark {
+        flex-shrink: 0;
+        color: var(--primary);
+    }
+
+    .logo__ink {
+        transform-origin: 32px 32px;
+        transition: scale 0.6s var(--ease-out);
+    }
+
+    .logo:hover .logo__ink {
+        scale: 1.08;
+    }
+</style>

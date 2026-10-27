@@ -1,0 +1,44 @@
+---
+import { buttonVariants } from "@/components/ui/button";
+import { pages } from "@/data/site";
+---
+
+<section class="container-page section-sm not-found">
+    <p class="not-found__code" aria-hidden="true">404</p>
+    <h1 class="not-found__title">Page introuvable</h1>
+    <p>Cette page n'existe pas, a été renommée ou correspond à un rapport expiré.</p>
+    <div class="not-found__actions">
+        <a class={buttonVariants({ size: "lg" })} href={pages.verify}>Vérifier un domaine</a>
+        <a class={buttonVariants({ variant: "outline", size: "lg" })} href={pages.home}>Retour à l'accueil</a>
+    </div>
+</section>
+
+<style>
+    .not-found {
+        display: grid;
+        justify-items: center;
+        gap: 1rem;
+        max-width: 36rem;
+        text-align: center;
+    }
+
+    .not-found__code {
+        font-family: var(--font-heading);
+        font-size: 7rem;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--foreground);
+    }
+
+    .not-found__title {
+        font-size: var(--text-h2);
+    }
+
+    .not-found__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+</style>

@@ -1,0 +1,9 @@
+---
+import NotFound from "@/components/layout/NotFound.astro";
+import { site } from "@/data/site";
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title={`Page introuvable | ${site.name}`} description="Cette page n'existe pas ou a été déplacée.">
+    <NotFound/>
+</Base>

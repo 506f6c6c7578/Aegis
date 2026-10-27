@@ -148,3 +148,8 @@ vite.config.ts.timestamp-*
 
 # Astro
 .astro/
+
+# Tests
+test-results/
+playwright-report/
+blob-report/

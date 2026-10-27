@@ -1,0 +1,10 @@
+**
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!astro.config.ts
+!tsconfig.json
+!components.json
+!scripts/nginx-security-headers.ts
+!src/**
+!docker/**

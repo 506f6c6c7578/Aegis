@@ -1,0 +1,27 @@
+---
+import { site } from "@/data/site";
+import { brandColors } from "@/lib/brand";
+
+interface Props {
+    title: string;
+    description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<title>{title}</title>
+<meta name="description" content={description}/>
+<meta name="robots" content={site.robots}/>
+<meta name="author" content={site.author.name}/>
+<meta name="color-scheme" content="light dark"/>
+<meta name="theme-color" media="(prefers-color-scheme: light)" content={brandColors.body}/>
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content={brandColors.darkBody}/>
+<meta name="format-detection" content="telephone=no"/>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content={site.name}/>
+<meta property="og:locale" content={site.locale}/>
+<meta property="og:title" content={title}/>
+<meta property="og:description" content={description}/>

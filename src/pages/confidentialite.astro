@@ -1,0 +1,72 @@
+---
+import { contactFormLink, type LegalDocument } from "@/data/legal";
+import { legalLinks, site } from "@/data/site";
+import { verificationPolicy } from "@/domain/verification/policy";
+import Legal from "@/layouts/Legal.astro";
+
+const minutes = (milliseconds: number) => Math.round(milliseconds / 60_000);
+
+const privacyPolicy: LegalDocument = {
+    link: legalLinks.privacy,
+    description: `Politique de confidentialité de ${site.name} : données traitées, finalités, durées de conservation et droits.`,
+    updatedAt: "2026-10-27",
+    sections: [
+        {
+            title: "Responsable du traitement",
+            blocks: [
+                [`Le responsable du traitement des données traitées sur ce site est ${site.author.name}, que tu peux joindre via le `, contactFormLink, "."],
+                "Ce site ne nécessite aucun compte et ne contient ni publicité, ni outil de mesure d'audience, ni script tiers. Aucune donnée n'est vendue ni utilisée à des fins commerciales."
+            ]
+        },
+        {
+            title: "Vérifications et analyses",
+            blocks: [
+                "Pour vérifier un domaine puis l'analyser, Aegis traite uniquement :",
+                {
+                    items: [
+                        "Le nom de domaine que tu saisis",
+                        "Le jeton de vérification généré pour ce domaine et le résultat de la requête DNS associée",
+                        "Les informations publiques renvoyées par la page d'accueil du domaine : certificat, en-têtes HTTP et redirections",
+                        "Ton adresse IP, uniquement pour limiter le nombre de vérifications et d'analyses"
+                    ]
+                },
+                "Aucune base de données n'est utilisée. Les compteurs de limitation et les rapports sont conservés en mémoire, puis effacés automatiquement à expiration ou au redémarrage du service. Aucun historique d'analyse n'est conservé.",
+                "La valeur des cookies du site analysé n'est jamais lue, stockée ni affichée : seuls leur nom et leurs attributs figurent dans le rapport.",
+                "Ce traitement repose sur mon intérêt légitime à fournir le service demandé tout en empêchant les usages abusifs (article 6.1.f du RGPD)."
+            ]
+        },
+        {
+            title: "Cookies",
+            blocks: [
+                "Aegis dépose uniquement des cookies strictement nécessaires, signés, inaccessibles aux scripts (HttpOnly), transmis en HTTPS (Secure) et jamais envoyés à un autre site (SameSite=Strict) :",
+                {
+                    items: [
+                        `Un identifiant de session aléatoire, valable ${minutes(verificationPolicy.sessionTtlMs)} minutes, qui rattache les rapports à ton navigateur`,
+                        `Le challenge de vérification en cours, valable ${minutes(verificationPolicy.challengeTtlMs)} minutes, qui contient seulement une empreinte du jeton`,
+                        `La preuve de propriété, valable ${minutes(verificationPolicy.proofTtlMs)} minutes et limitée au domaine vérifié`
+                    ]
+                },
+                "Ces cookies ne servent ni au suivi ni à la mesure d'audience et ne nécessitent donc pas de consentement.",
+                "Ton thème clair ou sombre et le challenge affiché sont également mémorisés dans le stockage de ton navigateur, qui ne quitte jamais ton appareil."
+            ]
+        },
+        {
+            title: "Journaux techniques",
+            blocks: [
+                "Le serveur web enregistre des journaux techniques (adresse IP, date et heure, page demandée, code de réponse et navigateur) pour assurer la sécurité du site. Ils sont conservés sur une durée limitée, puis supprimés automatiquement par rotation.",
+                "Les journaux applicatifs d'Aegis ne contiennent ni domaine analysé, ni adresse IP, ni jeton, ni valeur de cookie.",
+                "Cloudflare, qui achemine et protège le trafic du site, traite également ces données techniques."
+            ]
+        },
+        {
+            title: "Tes droits",
+            blocks: [
+                ["Tu disposes d'un droit d'accès, de rectification, d'effacement, de limitation et d'opposition. Pour les exercer, utilise le ", contactFormLink, "."],
+                ["Tu peux aussi introduire une réclamation auprès de la ", { label: "CNIL", href: "https://www.cnil.fr" }, "."]
+            ]
+        }
+    ]
+};
+---
+
+<Legal {...privacyPolicy}/>

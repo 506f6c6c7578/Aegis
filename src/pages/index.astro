@@ -1,0 +1,287 @@
+---
+import { ArrowRight, ArrowUpRight, BadgeCheck, Cookie, FileCode, Info, ListChecks, Repeat, ScanSearch, ShieldCheck, Timer, Wrench } from "lucide-react";
+import { AuditSummary } from "@/components/audit/AuditSummary";
+import { CheckCard } from "@/components/audit/CheckCard";
+import { buttonVariants } from "@/components/ui/button";
+import { sampleReport } from "@/data/sample-report";
+import { pages, sections, site } from "@/data/site";
+import { categories } from "@/domain/audit/labels";
+import { getRecommendations } from "@/domain/audit/recommendations";
+import Base from "@/layouts/Base.astro";
+
+const steps = [
+    {
+        icon: BadgeCheck,
+        title: "Vérifier",
+        text: "Saisis ton domaine, puis publie le jeton fourni dans un enregistrement DNS TXT. Aegis vérifie la propriété avant toute connexion."
+    },
+    {
+        icon: ScanSearch,
+        title: "Analyser",
+        text: "Aegis contacte uniquement la page d'accueil en HTTPS, lit le certificat et les en-têtes, suit au plus cinq redirections, et c'est tout."
+    },
+    {
+        icon: Wrench,
+        title: "Corriger",
+        text: "Le rapport classe les constats par priorité et explique, pour chacun, l'impact et la correction concrète à appliquer."
+    }
+];
+
+const controls = [
+    { icon: ShieldCheck, title: "HTTPS et TLS", items: "Disponibilité, chaîne et nom du certificat, expiration, protocole, suite négociée, HSTS." },
+    { icon: ListChecks, title: "En-têtes HTTP", items: "X-Content-Type-Options, Referrer-Policy, Permissions-Policy, COOP, CORP, COEP, frame-ancestors." },
+    { icon: FileCode, title: "CSP", items: "default-src, script-src, object-src, base-uri, form-action, unsafe-inline, unsafe-eval et sources trop larges." },
+    { icon: Cookie, title: "Cookies", items: "Secure, HttpOnly, SameSite, Domain, Path et durée de vie, sans jamais lire la valeur des cookies." },
+    { icon: Repeat, title: "Redirections", items: "Passage de HTTP vers HTTPS, chaîne bornée, boucles, retours en HTTP et destinations hors domaine." },
+    { icon: Timer, title: "Cache", items: "Cache-Control, Pragma, Expires, cohérence avec les cookies et versions logicielles exposées." }
+];
+
+const limits = [
+    "Seule la page d'accueil du domaine vérifié est analysée : aucun autre chemin, aucune ressource secondaire, aucun JavaScript exécuté.",
+    "Aegis ne scanne pas de ports, n'énumère ni sous-domaines ni répertoires, n'envoie aucune charge d'attaque et ne tente aucune authentification.",
+    "Seuls les en-têtes HTTP et l'en-tête HTML de la page d'accueil (64 Kio au plus) sont lus : une protection ajoutée par JavaScript ou propre à d'autres pages n'est pas visible.",
+    "Les versions et suites TLS obsolètes ne sont pas testées : seule la négociation réellement retenue est rapportée.",
+    "Le score est indicatif. Il résume des bonnes pratiques observables de l'extérieur et ne constitue ni un audit complet, ni une certification, ni une garantie de sécurité.",
+    "Les rapports sont temporaires : ils expirent après 30 minutes et ne sont visibles que dans le navigateur qui a lancé l'analyse."
+];
+
+const previewChecks = getRecommendations(sampleReport.checks).slice(0, 2);
+---
+
+<Base title={site.title} description={site.description}>
+    <section class="hero bg-gradient" aria-labelledby="hero-titre">
+        <div class="container-page hero__inner stagger">
+            <p class="eyebrow">{site.name} · Analyse défensive</p>
+            <h1 id="hero-titre" class="hero__title">Comprends la posture de sécurité de ton domaine.</h1>
+            <p class="hero__text">
+                Aegis examine HTTPS, TLS, les en-têtes de sécurité, la CSP, les cookies, les redirections et le cache de ton site,
+                puis te remet un rapport priorisé et actionnable. L'analyse n'est possible qu'après avoir prouvé, par DNS, que tu
+                contrôles le domaine.
+            </p>
+            <div class="hero__actions">
+                <a class={buttonVariants({ size: "lg" })} href={pages.verify}>
+                    Vérifier un domaine
+                    <ArrowRight aria-hidden="true"/>
+                </a>
+                <a class={buttonVariants({ variant: "outline", size: "lg" })} href={`#${sections.controls}`}>Voir les contrôles</a>
+            </div>
+        </div>
+    </section>
+
+    <section id={sections.process} class="container-page section" aria-labelledby="fonctionnement-titre">
+        <header class="section-header">
+            <p class="eyebrow">Fonctionnement</p>
+            <h2 id="fonctionnement-titre">Vérifier, analyser, corriger</h2>
+            <p>Trois étapes, sans compte ni installation. Aucun historique n'est conservé sur le serveur.</p>
+        </header>
+        <ol class="steps">
+            {steps.map(({ icon: Icon, title, text }, index) => (
+                    <li class="panel reveal">
+                        <span class="panel__icon"><Icon size={20} aria-hidden="true"/></span>
+                        <h3 class="panel__title"><span class="sr-only">Étape {index + 1} : </span>{title}</h3>
+                        <p>{text}</p>
+                    </li>
+            ))}
+        </ol>
+    </section>
+
+    <section class="section-sm bg-gradient" aria-labelledby="apercu-titre">
+        <div class="container-page">
+            <header class="section-header">
+                <p class="eyebrow">Aperçu</p>
+                <h2 id="apercu-titre">À quoi ressemble un rapport</h2>
+                <p class="preview__notice">
+                    <Info size={18} aria-hidden="true"/>
+                    <span>Rapport fictif pour le domaine réservé {sampleReport.domain} : aucune donnée réelle.</span>
+                </p>
+            </header>
+            <div class="preview">
+                <AuditSummary client:visible report={sampleReport}/>
+                <ul class="preview__checks" aria-label="Exemples de recommandations">
+                    {previewChecks.map((check) => <li><CheckCard check={check}/></li>)}
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id={sections.controls} class="container-page section" aria-labelledby="controles-titre">
+        <header class="section-header">
+            <p class="eyebrow">Contrôles</p>
+            <h2 id="controles-titre">Ce qu'Aegis examine</h2>
+            <p>Chaque contrôle indique son état, sa priorité, la donnée observée et une recommandation concrète.</p>
+        </header>
+        <ul class="controls">
+            {controls.map(({ icon: Icon, title, items }) => (
+                    <li class="panel reveal">
+                        <span class="panel__icon"><Icon size={20} aria-hidden="true"/></span>
+                        <h3 class="panel__title">{title}</h3>
+                        <p>{items}</p>
+                    </li>
+            ))}
+        </ul>
+        <p class="controls__weights">
+            Pondération du score : {Object.values(categories).map(({ label, weight }) => `${label} ${weight}`).join(" · ")}.
+        </p>
+    </section>
+
+    <section id={sections.limits} class="container-page" aria-labelledby="limites-titre">
+        <div class="limits">
+            <header class="section-header">
+                <p class="eyebrow">Limites</p>
+                <h2 id="limites-titre">Un outil défensif, volontairement borné</h2>
+                <p>Aegis aide à repérer des écarts de configuration. Il ne remplace ni un audit de sécurité, ni un test d'intrusion autorisé.</p>
+            </header>
+            <ul class="limits__list">
+                {limits.map((limit) => <li>{limit}</li>)}
+            </ul>
+        </div>
+    </section>
+
+    <section class="container-page section-sm" aria-labelledby="auteur-titre">
+        <div class="author">
+            <div>
+                <h2 id="auteur-titre" class="author__title">Un projet de {site.author.name}</h2>
+                <p>Aegis fait partie des projets personnels présentés sur mon portfolio, entre cybersécurité et développement web.</p>
+            </div>
+            <a class={buttonVariants({ variant: "outline", size: "lg" })} href={site.author.url}>
+                Voir le portfolio
+                <ArrowUpRight aria-hidden="true"/>
+            </a>
+        </div>
+    </section>
+</Base>
+
+<style>
+    .hero {
+        padding-block: 4rem 3.5rem;
+    }
+
+    .hero__inner {
+        display: grid;
+        gap: 1.25rem;
+        max-width: 48rem;
+        text-align: center;
+    }
+
+    .hero__title {
+        font-size: var(--text-h1);
+    }
+
+    .hero__text {
+        font-size: 1.125rem;
+    }
+
+    .hero__actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+
+    .steps,
+    .controls {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+        gap: 1.25rem;
+    }
+
+    .panel {
+        display: grid;
+        align-content: start;
+        gap: 0.75rem;
+        padding: 1.5rem;
+        background-color: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+    }
+
+    .panel__icon {
+        display: grid;
+        place-items: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        color: var(--brand);
+        background-color: var(--brand-soft);
+        border-radius: var(--radius-lg);
+    }
+
+    .panel__title {
+        font-size: 1.25rem;
+    }
+
+    .preview {
+        display: grid;
+        gap: 1.25rem;
+    }
+
+    .preview__checks {
+        display: grid;
+        gap: 1rem;
+    }
+
+    @media (min-width: 80rem) {
+        .preview {
+            grid-template-columns: 3fr 2fr;
+            align-items: start;
+        }
+    }
+
+    .preview__notice {
+        display: flex;
+        gap: 0.625rem;
+        font-size: 0.9375rem;
+        color: var(--foreground);
+    }
+
+    .preview__notice :global(svg) {
+        flex-shrink: 0;
+        margin-top: 0.2rem;
+        color: var(--brand);
+    }
+
+    .controls__weights {
+        margin-top: 1.5rem;
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
+    }
+
+    .limits {
+        padding: 2rem 1.5rem;
+        background-color: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+    }
+
+    @media (min-width: 48rem) {
+        .limits {
+            padding: 3rem;
+        }
+    }
+
+    .limits__list {
+        display: grid;
+        gap: 0.875rem;
+        max-width: 52rem;
+        padding-left: 1.25rem;
+        list-style: disc;
+    }
+
+    .limits__list li::marker {
+        color: var(--brand);
+    }
+
+    .author {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding-top: 2.5rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .author__title {
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+    }
+</style>

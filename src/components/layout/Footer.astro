@@ -1,0 +1,122 @@
+---
+import { ArrowUpRight } from "lucide-react";
+import Logo from "@/components/layout/Logo.astro";
+import { credits, legalLinks, navigation, site } from "@/data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer print-hidden">
+    <div class="container-page footer__inner">
+        <div class="footer__brand">
+            <Logo/>
+            <p>{site.tagline}</p>
+            <a class="footer__author" href={site.author.url}>
+                Un projet de {site.author.name}
+                <ArrowUpRight size={16} aria-hidden="true"/>
+            </a>
+        </div>
+        <nav aria-label="Navigation secondaire">
+            <ul class="footer__list">
+                {navigation.map(({ label, href }) => <li><a class="footer__link" href={href}>{label}</a></li>)}
+            </ul>
+        </nav>
+        <ul class="footer__list footer__credits">
+            {credits.map(({ label, href }) => (
+                    <li><a class="footer__link" href={href} target="_blank" rel="noopener noreferrer">{label}</a></li>
+            ))}
+        </ul>
+    </div>
+    <div class="footer__bottom">
+        <div class="container-page footer__legal">
+            <p>© {year} <a class="footer__link" href={site.author.url}>{site.author.name}</a>. Tous droits réservés.</p>
+            <nav aria-label="Informations légales">
+                <ul class="footer__legal-list">
+                    {Object.values(legalLinks).map(({ label, href }) => <li><a class="footer__link" href={href}>{label}</a></li>)}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        margin-top: 5rem;
+        background-color: var(--surface);
+        border-top: 1px solid var(--border);
+    }
+
+    .footer__inner {
+        display: grid;
+        gap: 2rem;
+        padding-block: 2.5rem;
+    }
+
+    .footer__brand {
+        display: grid;
+        justify-items: start;
+        gap: 0.75rem;
+        max-width: 24rem;
+    }
+
+    .footer__author {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-weight: 600;
+        color: var(--foreground);
+        text-underline-offset: 0.25rem;
+    }
+
+    .footer__author:hover {
+        text-decoration: underline;
+    }
+
+    .footer__list {
+        display: grid;
+        gap: 0.5rem;
+    }
+
+    .footer__credits {
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
+    }
+
+    .footer__link {
+        transition: color 0.2s ease;
+        text-underline-offset: 0.25rem;
+    }
+
+    .footer__link:hover {
+        color: var(--foreground);
+        text-decoration: underline;
+    }
+
+    .footer__bottom {
+        padding-block: 1.5rem;
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
+        border-top: 1px solid var(--border);
+    }
+
+    .footer__legal {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem 1.5rem;
+    }
+
+    .footer__legal-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.25rem;
+    }
+
+    @media (min-width: 64rem) {
+        .footer__inner {
+            grid-template-columns: 2fr 1fr 1.5fr;
+            align-items: start;
+        }
+    }
+</style>

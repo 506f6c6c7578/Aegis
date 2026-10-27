@@ -1,0 +1,47 @@
+---
+import { Check } from "lucide-react";
+import type { LegalBlock, LegalDocument, LegalList, RichText } from "@/data/legal";
+import { site } from "@/data/site";
+import Base from "@/layouts/Base.astro";
+import { formatDate } from "@/lib/format";
+
+type Props = LegalDocument;
+
+const { link, description, updatedAt, sections } = Astro.props;
+
+const isList = (block: LegalBlock): block is LegalList => typeof block !== "string" && "items" in block;
+const toSegments = (text: RichText) => typeof text === "string" ? [text] : text;
+---
+
+<Base title={`${link.label} | ${site.name}`} description={description}>
+    <article class="container-page grid max-w-220! gap-10 pt-12 md:pt-16">
+        <header class="stagger grid gap-3">
+            <h1 class="text-4xl md:text-5xl">{link.label}</h1>
+            <p class="text-muted-foreground">
+                Dernière mise à jour : <time datetime={updatedAt}>{formatDate(updatedAt)}</time>
+            </p>
+        </header>
+        {sections.map(({ title, blocks }) => (
+                <section class="reveal grid gap-4">
+                    <h2 class="text-xl">{title}</h2>
+                    {blocks.map((block) => isList(block) ? (
+                            <ul class="grid gap-4">
+                                {block.items.map((item) => (
+                                        <li class="relative pl-6">
+                                            <Check className="absolute top-1.5 left-0 size-4 text-foreground" strokeWidth={3} aria-hidden="true"/>
+                                            {item}
+                                        </li>
+                                ))}
+                            </ul>
+                    ) : (
+                            <p>
+                                {toSegments(block).map((segment) => typeof segment === "string" ? segment : (
+                                        <a class="font-semibold text-foreground underline underline-offset-4 transition-colors hover:text-brand"
+                                           href={segment.href}>{segment.label}</a>
+                                ))}
+                            </p>
+                    ))}
+                </section>
+        ))}
+    </article>
+</Base>

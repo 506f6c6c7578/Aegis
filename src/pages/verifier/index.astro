@@ -1,0 +1,55 @@
+---
+import { Clock, EyeOff, ShieldCheck } from "lucide-react";
+import { VerificationFlow } from "@/components/verification/VerificationFlow";
+import { site } from "@/data/site";
+import { verificationPolicy } from "@/domain/verification/policy";
+import Base from "@/layouts/Base.astro";
+
+const minutes = (milliseconds: number) => Math.round(milliseconds / 60_000);
+
+const notes = [
+    {
+        icon: ShieldCheck,
+        title: "Pourquoi une vérification DNS ?",
+        text: "Seul le propriétaire d'un domaine peut publier un enregistrement dans sa zone DNS. Aegis refuse d'analyser un domaine sans cette preuve."
+    },
+    {
+        icon: Clock,
+        title: "Des preuves de courte durée",
+        text: `Le challenge expire après ${minutes(verificationPolicy.challengeTtlMs)} minutes et la preuve de propriété après ${minutes(verificationPolicy.proofTtlMs)} minutes. Le nombre de vérifications et d'analyses est limité.`
+    },
+    {
+        icon: EyeOff,
+        title: "Rien n'est conservé",
+        text: "Aucun compte, aucune base de données. Les preuves sont stockées dans des cookies signés et le rapport est effacé après 30 minutes."
+    }
+];
+---
+
+<Base title={`Vérifier un domaine | ${site.name}`} description="Prouve la propriété de ton domaine par un enregistrement DNS TXT avant de lancer une analyse Aegis.">
+    <div class="container-page grid gap-10 py-12 md:py-16">
+        <header class="stagger grid max-w-3xl gap-3">
+            <p class="eyebrow">Vérification de propriété</p>
+            <h1 class="text-4xl md:text-5xl">Vérifier un domaine</h1>
+            <p class="text-lg">
+                Avant toute analyse, Aegis s'assure que tu contrôles le domaine grâce à un enregistrement DNS TXT temporaire.
+            </p>
+        </header>
+        <div class="grid items-start gap-8 lg:grid-cols-[2fr_1fr]">
+            <div class="min-w-0">
+                <VerificationFlow client:load/>
+            </div>
+            <aside class="grid gap-5" aria-label="À savoir">
+                {notes.map(({ icon: Icon, title, text }) => (
+                        <div class="grid gap-1.5">
+                            <h2 class="flex items-center gap-2 text-base">
+                                <Icon className="size-4 text-brand" aria-hidden="true"/>
+                                {title}
+                            </h2>
+                            <p class="text-[0.9375rem]">{text}</p>
+                        </div>
+                ))}
+            </aside>
+        </div>
+    </div>
+</Base>

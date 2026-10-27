@@ -1,0 +1,15 @@
+[Unit]
+Description=Aegis : politique de sortie réseau du scanner
+After=docker.service ufw.service
+Requires=docker.service
+PartOf=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=AEGIS_DNS_SERVERS=1.1.1.1,9.9.9.9
+ExecStart=/usr/local/sbin/aegis-egress-firewall apply
+ExecStop=/usr/local/sbin/aegis-egress-firewall remove
+
+[Install]
+WantedBy=multi-user.target

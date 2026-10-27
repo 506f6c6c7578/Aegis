@@ -1,0 +1,21 @@
+---
+import { ReportPage } from "@/components/audit/ReportPage";
+import NotFound from "@/components/layout/NotFound.astro";
+import { site } from "@/data/site";
+import Base from "@/layouts/Base.astro";
+import { reportIdSchema } from "@/lib/validation/api";
+
+export const prerender = false;
+
+const id = reportIdSchema.safeParse(Astro.params.id);
+if (!id.success) Astro.response.status = 404;
+---
+
+<Base title={id.success ? `Rapport d'analyse | ${site.name}` : `Page introuvable | ${site.name}`}
+      description="Rapport temporaire et privé d'analyse de la posture de sécurité d'un domaine.">
+    {id.success ? (
+            <div class="container-page py-12 md:py-16">
+                <ReportPage client:load id={id.data}/>
+            </div>
+    ) : <NotFound/>}
+</Base>

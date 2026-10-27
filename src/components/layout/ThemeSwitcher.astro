@@ -1,0 +1,64 @@
+---
+import { Moon, Sun } from "lucide-react";
+---
+
+<button class="theme-switcher" type="button" role="switch" aria-checked="false" aria-label="Thème sombre"
+        data-theme-switcher>
+    <span class="theme-switcher__thumb">
+        <Sun className="theme-switcher__icon theme-switcher__icon--light" size={14} strokeWidth={2.5} aria-hidden="true"/>
+        <Moon className="theme-switcher__icon theme-switcher__icon--dark" size={14} strokeWidth={2.5} aria-hidden="true"/>
+    </span>
+</button>
+
+<style>
+    .theme-switcher {
+        position: relative;
+        flex-shrink: 0;
+        width: 2.5rem;
+        height: 1.5rem;
+        padding: 0;
+        background: none;
+        border: 0;
+        border-radius: 1rem;
+    }
+
+    .theme-switcher::before {
+        content: "";
+        position: absolute;
+        inset: 0.25rem 0;
+        background-color: var(--border);
+        border-radius: 1rem;
+    }
+
+    .theme-switcher__thumb {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: grid;
+        place-items: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        color: var(--background);
+        background-color: var(--primary);
+        border-radius: 50%;
+        transition: translate 0.3s var(--ease-out);
+    }
+
+    .theme-switcher__thumb :global(.theme-switcher__icon) {
+        grid-area: 1 / 1;
+        transition: opacity 0.3s ease;
+    }
+
+    .theme-switcher__thumb :global(.theme-switcher__icon--dark),
+    :global(:root.dark) .theme-switcher__thumb :global(.theme-switcher__icon--light) {
+        opacity: 0;
+    }
+
+    :global(:root.dark) .theme-switcher__thumb {
+        translate: 1rem 0;
+    }
+
+    :global(:root.dark) .theme-switcher__thumb :global(.theme-switcher__icon--dark) {
+        opacity: 1;
+    }
+</style>

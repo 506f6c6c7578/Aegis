@@ -1,0 +1,66 @@
+name: aegis
+
+x-build: &build
+  context: .
+
+x-hardening: &hardening
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp:size=16m,mode=1777
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: local
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  aegis:
+    <<: *hardening
+    build:
+      <<: *build
+      target: web
+    expose:
+      - "8080"
+    networks:
+      - internal
+    depends_on:
+      aegis-app:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 64M
+
+  aegis-app:
+    <<: *hardening
+    build:
+      <<: *build
+      target: app
+    environment:
+      AEGIS_SECRET: ${AEGIS_SECRET:?AEGIS_SECRET manquante}
+      AEGIS_DNS_SERVERS: ${AEGIS_DNS_SERVERS:-1.1.1.1,9.9.9.9}
+    expose:
+      - "4321"
+    networks:
+      - internal
+      - egress
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 256M
+          pids: 128
+
+networks:
+  internal:
+    internal: true
+  egress:
+    enable_ipv6: false
+    driver_opts:
+      com.docker.network.bridge.name: aegis-egress

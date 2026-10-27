@@ -1,0 +1,77 @@
+---
+import { contactFormLink, type LegalDocument } from "@/data/legal";
+import { legalLinks, site } from "@/data/site";
+import Legal from "@/layouts/Legal.astro";
+
+const { name: author } = site.author;
+
+const legalNotice: LegalDocument = {
+    link: legalLinks.notice,
+    description: `Mentions légales de ${site.name} : éditeur, hébergement, propriété intellectuelle et responsabilité.`,
+    updatedAt: "2026-10-27",
+    sections: [
+        {
+            title: "Éditeur du site",
+            blocks: [
+                `${site.name} est édité à titre personnel et non professionnel par ${author}.`,
+                ["Pour me contacter, utilise le ", contactFormLink, "."],
+                "Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN), mes éléments d'identification ont été communiqués à l'hébergeur et mon adresse postale n'est pas publiée."
+            ]
+        },
+        {
+            title: "Directeur de la publication",
+            blocks: [author]
+        },
+        {
+            title: "Hébergement",
+            blocks: [
+                "OVH SAS, 2 rue Kellermann, 59100 Roubaix, France, immatriculée au RCS de Lille Métropole sous le numéro 424 761 419.",
+                "Téléphone : +33 9 72 10 10 07",
+                ["Site web : ", { label: "ovhcloud.com", href: "https://www.ovhcloud.com" }],
+                "Le site est diffusé et protégé par le réseau de Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, États-Unis.",
+                ["Site web : ", { label: "cloudflare.com", href: "https://www.cloudflare.com" }]
+            ]
+        },
+        {
+            title: "Propriété intellectuelle",
+            blocks: [
+                `L'ensemble du site, notamment ses textes, son identité visuelle et son code source, est la propriété exclusive de ${author}. Toute reproduction, représentation, modification ou réutilisation, même partielle, est interdite sans autorisation écrite préalable.`,
+                ["Le code source est public uniquement pour être consulté, dans les conditions précisées par sa ", { label: "licence", href: `${site.repository}/blob/main/LICENSE` }, "."],
+                "Les polices Signika et Heebo, les icônes Lucide et les bibliothèques utilisées restent soumises à leurs licences respectives."
+            ]
+        },
+        {
+            title: "Usage autorisé",
+            blocks: [
+                "Aegis est un outil d'analyse défensive. Il ne peut analyser qu'un domaine dont la propriété a été démontrée par un enregistrement DNS, et se limite à la lecture des informations publiques renvoyées par sa page d'accueil.",
+                "Tu t'engages à n'utiliser Aegis que sur des domaines que tu administres ou pour lesquels tu disposes d'une autorisation."
+            ]
+        },
+        {
+            title: "Exactitude des informations",
+            blocks: [
+                "Les rapports reflètent l'état observé au moment de l'analyse, depuis l'extérieur et sans authentification. Ils sont fournis à titre indicatif, sans garantie d'exhaustivité.",
+                "Le score proposé n'est ni une certification ni une garantie de sécurité, et ne remplace pas un audit réalisé par un professionnel."
+            ]
+        },
+        {
+            title: "Données personnelles",
+            blocks: [
+                ["La collecte et le traitement de tes données sont détaillés dans la ", legalLinks.privacy, "."]
+            ]
+        },
+        {
+            title: "Liens externes",
+            blocks: [
+                "Ce site contient des liens vers des sites tiers sur lesquels je n'exerce aucun contrôle. Je ne peux être tenu responsable de leur contenu."
+            ]
+        },
+        {
+            title: "Droit applicable",
+            blocks: ["Les présentes mentions légales sont régies par le droit français."]
+        }
+    ]
+};
+---
+
+<Legal {...legalNotice}/>
