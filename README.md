@@ -39,7 +39,7 @@ n'envoie aucune charge d'attaque, ne tente aucune authentification et ne teste a
 
 | Service | Image                         | Réseaux              | Rôle                                                           |
 |---------|-------------------------------|----------------------|----------------------------------------------------------------|
-| `aegis` | `nginx-unprivileged` (Alpine) | `internal`, Dokploy  | Sert les pages statiques et relaie les seules routes dynamiques |
+| `aegis` | `nginx` (Alpine, non-root) | `internal`, Dokploy  | Sert les pages statiques et relaie les seules routes dynamiques |
 | `aegis-app` | `node` (Alpine)           | `internal`, `egress` | Serveur Astro autonome : vérification DNS, scanner, rapports    |
 
 ```mermaid

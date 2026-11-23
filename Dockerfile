@@ -51,12 +51,11 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 
 CMD ["node", "dist/server/entry.mjs"]
 
-FROM nginxinc/nginx-unprivileged:1.30.6-alpine3.24@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03 AS web
-
-USER root
+FROM nginx:1.30.7-alpine3.24@sha256:caf4e1e032a20f9c3c5e28fc7f25ffd768ad8677b4975c54193075997b3a97e3 AS web
 
 RUN apk upgrade --no-cache \
-    && sed -i 's/^worker_processes .*/worker_processes 1;/' /etc/nginx/nginx.conf
+    && sed -i -e '/^user /d' -e 's/^worker_processes .*/worker_processes 1;/' -e 's#^pid .*#pid /tmp/nginx.pid;#' /etc/nginx/nginx.conf \
+    && printf '%s_temp_path /tmp/%s_temp;\n' client_body client proxy proxy fastcgi fastcgi uwsgi uwsgi scgi scgi > /etc/nginx/conf.d/temp-paths.conf
 
 COPY --chown=root:root docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --chown=root:root --from=build /app/dist/nginx/security-headers.conf /etc/nginx/snippets/security-headers.conf
